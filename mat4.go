@@ -1,20 +1,11 @@
 package madar
 
-import (
-	"math"
-)
+import "math"
 
-// Matrix4 represents a 4x4 matrix in row-major order.
-type Matrix4 [16]float32
+type Matrix4X4 [16]float32
 
-// NewMatrix4 creates a new Matrix4 with the given values.
-func NewMatrix4(values [16]float32) Matrix4 {
-	return Matrix4(values)
-}
-
-// Identity returns an identity matrix.
-func Identity() Matrix4 {
-	return Matrix4{
+func IdentityMatrix4X4() Matrix4X4 {
+	return Matrix4X4{
 		1, 0, 0, 0,
 		0, 1, 0, 0,
 		0, 0, 1, 0,
@@ -22,115 +13,17 @@ func Identity() Matrix4 {
 	}
 }
 
-// Multiply multiplies two matrices and returns the result.
-func (m Matrix4) Multiply(n Matrix4) Matrix4 {
-	var result Matrix4
-	for row := 0; row < 4; row++ {
-		for col := 0; col < 4; col++ {
-			sum := float32(0)
-			for i := 0; i < 4; i++ {
-				sum += m[row*4+i] * n[i*4+col]
-			}
-			result[row*4+col] = sum
-		}
-	}
-	return result
-}
-
-// MultiplyVector multiplies the matrix with a Vector4.
-func (m Matrix4) MultiplyVector(v [4]float32) [4]float32 {
-	var result [4]float32
-	for row := 0; row < 4; row++ {
-		sum := float32(0)
-		for col := 0; col < 4; col++ {
-			sum += m[row*4+col] * v[col]
-		}
-		result[row] = sum
-	}
-	return result
-}
-
-// Transpose returns the transpose of the matrix.
-func (m Matrix4) Transpose() Matrix4 {
-	var result Matrix4
-	for row := 0; row < 4; row++ {
-		for col := 0; col < 4; col++ {
-			result[col*4+row] = m[row*4+col]
-		}
-	}
-	return result
-}
-
-// Determinant calculates the determinant of the matrix.
-func (m Matrix4) Determinant() float32 {
-	return m[0]*m[5]*m[10]*m[15] +
-		m[0]*m[9]*m[14]*m[7] +
-		m[0]*m[13]*m[6]*m[11] -
-		m[0]*m[13]*m[10]*m[7] -
-		m[0]*m[5]*m[14]*m[11] -
-		m[0]*m[9]*m[6]*m[15] -
-		m[4]*m[1]*m[10]*m[15] -
-		m[8]*m[1]*m[14]*m[7] -
-		m[12]*m[1]*m[6]*m[11] +
-		m[12]*m[1]*m[10]*m[7] +
-		m[4]*m[1]*m[14]*m[11] +
-		m[8]*m[1]*m[6]*m[15] +
-		m[4]*m[9]*m[2]*m[15] +
-		m[8]*m[13]*m[2]*m[7] +
-		m[12]*m[5]*m[2]*m[11] -
-		m[12]*m[9]*m[2]*m[7] -
-		m[4]*m[13]*m[2]*m[11] -
-		m[8]*m[5]*m[2]*m[15] -
-		m[4]*m[9]*m[14]*m[3] -
-		m[8]*m[13]*m[6]*m[3] -
-		m[12]*m[5]*m[10]*m[3] +
-		m[12]*m[9]*m[6]*m[3] +
-		m[4]*m[13]*m[10]*m[3] +
-		m[8]*m[5]*m[14]*m[3]
-}
-
-// Inverse returns the inverse of the matrix and a boolean indicating success.
-func (m Matrix4) Inverse() (Matrix4, bool) {
-	det := m.Determinant()
-	if math.Abs(float64(det)) < 1e-6 {
-		return Matrix4{}, false
-	}
-
-	invDet := 1.0 / det
-	result := Matrix4{
-		(m[5]*m[10]*m[15] + m[9]*m[14]*m[7] + m[13]*m[6]*m[11] - m[13]*m[10]*m[7] - m[5]*m[14]*m[11] - m[9]*m[6]*m[15]) * invDet,
-		(m[1]*m[14]*m[11] + m[9]*m[2]*m[15] + m[13]*m[10]*m[3] - m[13]*m[2]*m[11] - m[1]*m[10]*m[15] - m[9]*m[14]*m[3]) * invDet,
-		(m[1]*m[6]*m[15] + m[5]*m[14]*m[3] + m[13]*m[2]*m[7] - m[13]*m[6]*m[3] - m[1]*m[14]*m[7] - m[5]*m[2]*m[15]) * invDet,
-		(m[1]*m[10]*m[7] + m[5]*m[2]*m[11] + m[9]*m[6]*m[3] - m[9]*m[2]*m[7] - m[1]*m[6]*m[11] - m[5]*m[10]*m[3]) * invDet,
-		(m[4]*m[14]*m[11] + m[8]*m[6]*m[15] + m[12]*m[10]*m[7] - m[12]*m[6]*m[11] - m[4]*m[10]*m[15] - m[8]*m[14]*m[7]) * invDet,
-		(m[0]*m[10]*m[15] + m[8]*m[14]*m[3] + m[12]*m[2]*m[11] - m[12]*m[10]*m[3] - m[0]*m[14]*m[11] - m[8]*m[2]*m[15]) * invDet,
-		(m[0]*m[14]*m[7] + m[4]*m[2]*m[15] + m[12]*m[6]*m[3] - m[12]*m[2]*m[7] - m[0]*m[6]*m[15] - m[4]*m[14]*m[3]) * invDet,
-		(m[0]*m[6]*m[11] + m[4]*m[10]*m[3] + m[8]*m[2]*m[7] - m[8]*m[6]*m[3] - m[0]*m[10]*m[7] - m[4]*m[2]*m[11]) * invDet,
-		(m[4]*m[9]*m[15] + m[8]*m[13]*m[7] + m[12]*m[5]*m[11] - m[12]*m[9]*m[7] - m[4]*m[13]*m[11] - m[8]*m[5]*m[15]) * invDet,
-		(m[0]*m[13]*m[11] + m[8]*m[1]*m[15] + m[12]*m[9]*m[3] - m[12]*m[1]*m[11] - m[0]*m[9]*m[15] - m[8]*m[13]*m[3]) * invDet,
-		(m[0]*m[5]*m[15] + m[4]*m[13]*m[3] + m[12]*m[1]*m[7] - m[12]*m[5]*m[3] - m[0]*m[13]*m[7] - m[4]*m[1]*m[15]) * invDet,
-		(m[0]*m[9]*m[7] + m[4]*m[1]*m[11] + m[8]*m[5]*m[3] - m[8]*m[1]*m[7] - m[0]*m[5]*m[11] - m[4]*m[9]*m[3]) * invDet,
-		(m[4]*m[13]*m[10] + m[8]*m[5]*m[14] + m[12]*m[9]*m[6] - m[12]*m[5]*m[10] - m[4]*m[9]*m[14] - m[8]*m[13]*m[6]) * invDet,
-		(m[0]*m[9]*m[14] + m[8]*m[13]*m[2] + m[12]*m[1]*m[10] - m[12]*m[9]*m[2] - m[0]*m[13]*m[10] - m[8]*m[1]*m[14]) * invDet,
-		(m[0]*m[13]*m[6] + m[4]*m[1]*m[14] + m[12]*m[5]*m[2] - m[12]*m[1]*m[6] - m[0]*m[5]*m[14] - m[4]*m[13]*m[2]) * invDet,
-		(m[0]*m[5]*m[10] + m[4]*m[9]*m[2] + m[8]*m[1]*m[6] - m[8]*m[5]*m[2] - m[0]*m[9]*m[6] - m[4]*m[1]*m[10]) * invDet,
-	}
-	return result, true
-}
-
-// Translation returns a translation matrix.
-func Translation(x, y, z float32) Matrix4 {
-	return Matrix4{
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		x, y, z, 1,
+func TranslationMatrix4X4(x, y, z float32) Matrix4X4 {
+	return Matrix4X4{
+		1, 0, 0, x,
+		0, 1, 0, y,
+		0, 0, 1, z,
+		0, 0, 0, 1,
 	}
 }
 
-// Scale returns a scaling matrix.
-func Scale(x, y, z float32) Matrix4 {
-	return Matrix4{
+func ScaleMatrix4X4(x, y, z float32) Matrix4X4 {
+	return Matrix4X4{
 		x, 0, 0, 0,
 		0, y, 0, 0,
 		0, 0, z, 0,
@@ -138,56 +31,40 @@ func Scale(x, y, z float32) Matrix4 {
 	}
 }
 
-// RotationX returns a rotation matrix around the X-axis.
-func RotationX(angle float32) Matrix4 {
-	c := float32(math.Cos(float64(angle)))
-	s := float32(math.Sin(float64(angle)))
-	return Matrix4{
+func UniformScaleMatrix4X4(scale float32) Matrix4X4 {
+	return Matrix4X4{
 		1, 0, 0, 0,
-		0, c, -s, 0,
-		0, s, c, 0,
-		0, 0, 0, 1,
-	}
-}
-
-// RotationY returns a rotation matrix around the Y-axis.
-func RotationY(angle float32) Matrix4 {
-	c := float32(math.Cos(float64(angle)))
-	s := float32(math.Sin(float64(angle)))
-	return Matrix4{
-		c, 0, s, 0,
 		0, 1, 0, 0,
-		-s, 0, c, 0,
-		0, 0, 0, 1,
-	}
-}
-
-// RotationZ returns a rotation matrix around the Z-axis.
-func RotationZ(angle float32) Matrix4 {
-	c := float32(math.Cos(float64(angle)))
-	s := float32(math.Sin(float64(angle)))
-	return Matrix4{
-		c, -s, 0, 0,
-		s, c, 0, 0,
 		0, 0, 1, 0,
+		0, 0, 0, 1 / scale,
+	}
+}
+
+func RotationMatrix4X4(x, y, z float32) Matrix4X4 {
+	cx, sx := float32(math.Cos(float64(x))), float32(math.Sin(float64(x)))
+	cy, sy := float32(math.Cos(float64(y))), float32(math.Sin(float64(y)))
+	cz, sz := float32(math.Cos(float64(z))), float32(math.Sin(float64(z)))
+
+	return Matrix4X4{
+		cy * cz, sx*sy*cz - cx*sz, cx*sy*cz + sx*sz, 0,
+		cy * sz, sx*sy*sz + cx*cz, cx*sy*sz - sx*cz, 0,
+		-sy, sx * cy, cx * cy, 0,
 		0, 0, 0, 1,
 	}
 }
 
-// Perspective returns a perspective projection matrix.
-func Perspective(fov, aspect, near, far float32) Matrix4 {
-	tanHalfFov := float32(math.Tan(float64(fov) / 2))
-	return Matrix4{
-		1 / (aspect * tanHalfFov), 0, 0, 0,
-		0, 1 / tanHalfFov, 0, 0,
-		0, 0, -(far + near) / (far - near), -1,
-		0, 0, -(2 * far * near) / (far - near), 0,
+func PerspectiveMatrix4X4(fov, aspect, near, far float32) Matrix4X4 {
+	f := 1.0 / float32(math.Tan(float64(fov/2.0)))
+	return Matrix4X4{
+		f / aspect, 0, 0, 0,
+		0, f, 0, 0,
+		0, 0, (far + near) / (near - far), (2 * far * near) / (near - far),
+		0, 0, -1, 0,
 	}
 }
 
-// Orthographic returns an orthographic projection matrix.
-func Orthographic(left, right, bottom, top, near, far float32) Matrix4 {
-	return Matrix4{
+func OrthographicMatrix4X4(left, right, bottom, top, near, far float32) Matrix4X4 {
+	return Matrix4X4{
 		2 / (right - left), 0, 0, 0,
 		0, 2 / (top - bottom), 0, 0,
 		0, 0, -2 / (far - near), 0,
@@ -195,90 +72,57 @@ func Orthographic(left, right, bottom, top, near, far float32) Matrix4 {
 	}
 }
 
-// LookAt returns a view matrix.
-func LookAt(eye, target, up [3]float32) Matrix4 {
-	zAxis := normalize(subtract(eye, target))
-	xAxis := normalize(cross(up, zAxis))
-	yAxis := cross(zAxis, xAxis)
-
-	return Matrix4{
-		xAxis[0], yAxis[0], zAxis[0], 0,
-		xAxis[1], yAxis[1], zAxis[1], 0,
-		xAxis[2], yAxis[2], zAxis[2], 0,
-		-dot(xAxis, eye), -dot(yAxis, eye), -dot(zAxis, eye), 1,
+func LookAtMatrix4X4(eye, center, up Vector3) Matrix4X4 {
+	f := center.Sub(eye).Normalize()
+	s := f.Cross(up.Normalize())
+	u := s.Cross(f)
+	return Matrix4X4{
+		s.X, u.X, -f.X, 0,
+		s.Y, u.Y, -f.Y, 0,
+		s.Z, u.Z, -f.Z, 0,
+		0, 0, 0, 1,
 	}
 }
 
-// Helper functions for vector operations
-func subtract(a, b [3]float32) [3]float32 {
-	return [3]float32{a[0] - b[0], a[1] - b[1], a[2] - b[2]}
+func (m Matrix4X4) Multiply(m2 Matrix4X4) Matrix4X4 {
+	var result Matrix4X4
+	for i := 0; i < 4; i++ {
+		for j := 0; j < 4; j++ {
+			for k := 0; k < 4; k++ {
+				result[i*4+j] += m[i*4+k] * m2[k*4+j]
+			}
+		}
+	}
+	return result
 }
 
-func normalize(v [3]float32) [3]float32 {
-	length := float32(math.Sqrt(float64(v[0]*v[0] + v[1]*v[1] + v[2]*v[2])))
-	return [3]float32{v[0] / length, v[1] / length, v[2] / length}
+func (m Matrix4X4) MultiplyVector3(v Vector3) Vector3 {
+
+	return Vector3{
+		m[0]*v.X + m[1]*v.Y + m[2]*v.Z + m[3],
+		m[4]*v.X + m[5]*v.Y + m[6]*v.Z + m[7],
+		m[8]*v.X + m[9]*v.Y + m[10]*v.Z + m[11],
+	}
+
 }
 
-func cross(a, b [3]float32) [3]float32 {
-	return [3]float32{
-		a[1]*b[2] - a[2]*b[1],
-		a[2]*b[0] - a[0]*b[2],
-		a[0]*b[1] - a[1]*b[0],
+func (m Matrix4X4) MultiplyVector4(v Vector4) Vector4 {
+
+	return Vector4{
+		m[0]*v.X + m[1]*v.Y + m[2]*v.Z + m[3]*v.W,
+		m[4]*v.X + m[5]*v.Y + m[6]*v.Z + m[7]*v.W,
+		m[8]*v.X + m[9]*v.Y + m[10]*v.Z + m[11]*v.W,
+		m[12]*v.X + m[13]*v.Y + m[14]*v.Z + m[15]*v.W,
 	}
+
 }
 
-func dot(a, b [3]float32) float32 {
-	return a[0]*b[0] + a[1]*b[1] + a[2]*b[2]
-}
-
-// OrthographicMatrix creates an orthographic projection matrix.
-// Parameters:
-// - left, right: specify the coordinates for the left and right vertical clipping planes
-// - bottom, top: specify the coordinates for the bottom and top horizontal clipping planes
-// - near, far: specify the distances to the nearer and farther depth clipping planes
-func OrthographicMatrix(left, right, bottom, top, near, far float32) Matrix4 {
-	// Check for division by zero
-	if right == left || top == bottom || far == near {
-		panic("Invalid parameters for orthographic matrix: division by zero")
+func (m Matrix4X4) Transpose() Matrix4X4 {
+	var result Matrix4X4
+	for i := 0; i < 4; i++ {
+		for j := 0; j < 4; j++ {
+			result[i*4+j] = m[j*4+i]
+		}
 	}
-
-	return Matrix4{
-		2 / (right - left), 0, 0, 0,
-		0, 2 / (top - bottom), 0, 0,
-		0, 0, -2 / (far - near), 0,
-		-(right + left) / (right - left),
-		-(top + bottom) / (top - bottom),
-		-(far + near) / (far - near),
-		1,
-	}
-}
-
-// PerspectiveMatrix creates a perspective projection matrix.
-// Parameters:
-// - fov: Field of view in radians
-// - aspect: Aspect ratio (width / height) of the view plane
-// - near: Distance to the near clipping plane (must be positive)
-// - far: Distance to the far clipping plane (must be greater than near)
-func PerspectiveMatrix(fov, aspect, near, far float32) Matrix4 {
-	// Check for invalid parameters
-	if near <= 0 || far <= near {
-		panic("Invalid parameters for perspective matrix: near must be positive and far must be greater than near")
-	}
-	if fov <= 0 || fov >= math.Pi {
-		panic("Invalid field of view for perspective matrix: must be between 0 and π")
-	}
-	if aspect <= 0 {
-		panic("Invalid aspect ratio for perspective matrix: must be positive")
-	}
-
-	tanHalfFov := float32(math.Tan(float64(fov) / 2))
-	f := 1.0 / tanHalfFov
-	d := 1.0 / (near - far)
-
-	return Matrix4{
-		f / aspect, 0, 0, 0,
-		0, f, 0, 0,
-		0, 0, (far + near) * d, -1,
-		0, 0, 2 * far * near * d, 0,
-	}
+	return result
 }

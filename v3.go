@@ -2,53 +2,40 @@ package madar
 
 import "math"
 
-type Vector3 [3]float32
-
-func (v Vector3) Add(other Vector3) Vector3 {
-	return Vector3{
-		v[0] + other[0],
-		v[1] + other[1],
-		v[2] + other[2],
-	}
+type Vector3 struct {
+	X, Y, Z float32
 }
 
-func (v Vector3) Subtract(other Vector3) Vector3 {
+func (v Vector3) Cross(v2 Vector3) Vector3 {
 	return Vector3{
-		v[0] - other[0],
-		v[1] - other[1],
-		v[2] - other[2],
+		v.Y*v2.Z - v.Z*v2.Y,
+		v.Z*v2.X - v.X*v2.Z,
+		v.X*v2.Y - v.Y*v2.X,
 	}
-}
-
-func (v Vector3) Multiply(scalar float32) Vector3 {
-	return Vector3{
-		v[0] * scalar,
-		v[1] * scalar,
-		v[2] * scalar,
-	}
-}
-
-func (v Vector3) Length() float32 {
-	return float32(math.Sqrt(float64(v[0]*v[0] + v[1]*v[1] + v[2]*v[2])))
 }
 
 func (v Vector3) Normalize() Vector3 {
-	length := v.Length()
-	return Vector3{
-		v[0] / length,
-		v[1] / length,
-		v[2] / length,
-	}
+	return v.Scale(1 / v.Length())
 }
 
-func (v Vector3) Cross(other Vector3) Vector3 {
-	return Vector3{
-		v[1]*other[2] - v[2]*other[1],
-		v[2]*other[0] - v[0]*other[2],
-		v[0]*other[1] - v[1]*other[0],
-	}
+func (v Vector3) Length() float32 {
+	return float32(math.Sqrt(float64(v.X*v.X + v.Y*v.Y + v.Z*v.Z)))
 }
 
-func (v Vector3) Dot(other Vector3) float32 {
-	return v[0]*other[0] + v[1]*other[1] + v[2]*other[2]
+func (v Vector3) Scale(s float32) Vector3 {
+	return Vector3{v.X * s, v.Y * s, v.Z * s}
+}
+
+func (v Vector3) Add(v2 Vector3) Vector3 {
+	return Vector3{v.X + v2.X, v.Y + v2.Y, v.Z + v2.Z}
+}
+
+func (v Vector3) Sub(v2 Vector3) Vector3 {
+	return Vector3{v.X - v2.X, v.Y - v2.Y, v.Z - v2.Z}
+}
+
+func (v Vector3) Rotate(yaw, pitch, roll float32) Vector3 {
+	rotationMatrix := RotationMatrix4X4(yaw, pitch, roll)
+
+	return rotationMatrix.MultiplyVector3(Vector3{yaw, pitch, roll})
 }
