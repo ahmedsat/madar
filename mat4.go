@@ -74,12 +74,13 @@ func OrthographicMatrix4X4(left, right, bottom, top, near, far float32) Matrix4X
 
 func LookAtMatrix4X4(eye, center, up Vector3) Matrix4X4 {
 	f := center.Sub(eye).Normalize()
-	s := f.Cross(up.Normalize())
+	s := f.Cross(up.Normalize()).Normalize()
 	u := s.Cross(f)
+
 	return Matrix4X4{
-		s.X, u.X, -f.X, 0,
-		s.Y, u.Y, -f.Y, 0,
-		s.Z, u.Z, -f.Z, 0,
+		s.X, s.Y, s.Z, -s.Dot(eye),
+		u.X, u.Y, u.Z, -u.Dot(eye),
+		-f.X, -f.Y, -f.Z, f.Dot(eye),
 		0, 0, 0, 1,
 	}
 }

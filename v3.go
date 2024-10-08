@@ -39,3 +39,7 @@ func (v Vector3) Rotate(yaw, pitch, roll float32) Vector3 {
 
 	return rotationMatrix.MultiplyVector3(Vector3{yaw, pitch, roll})
 }
+
+func (v Vector3) Dot(v2 Vector3) float32 {
+	return v.X*v2.X + v.Y*v2.Y + v.Z*v2.Z
+}
