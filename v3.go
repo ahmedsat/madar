@@ -1,6 +1,8 @@
 package madar
 
-import "math"
+import (
+	"math"
+)
 
 type Vector3 struct {
 	X, Y, Z float32
@@ -36,7 +38,6 @@ func (v Vector3) Sub(v2 Vector3) Vector3 {
 
 func (v Vector3) Rotate(yaw, pitch, roll float32) Vector3 {
 	rotationMatrix := RotationMatrix4X4(yaw, pitch, roll)
-
 	return rotationMatrix.MultiplyVector3(Vector3{yaw, pitch, roll})
 }
 
