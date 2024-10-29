@@ -16,20 +16,20 @@ func IdentityMatrix4X4() Matrix4X4 {
 	}
 }
 
-func TranslationMatrix4X4(x, y, z float32) Matrix4X4 {
+func TranslationMatrix4X4(v Vector3) Matrix4X4 {
 	return Matrix4X4{
-		1, 0, 0, x,
-		0, 1, 0, y,
-		0, 0, 1, z,
+		1, 0, 0, v.X,
+		0, 1, 0, v.Y,
+		0, 0, 1, v.Z,
 		0, 0, 0, 1,
 	}
 }
 
-func ScaleMatrix4X4(x, y, z float32) Matrix4X4 {
+func ScaleMatrix4X4(v Vector3) Matrix4X4 {
 	return Matrix4X4{
-		x, 0, 0, 0,
-		0, y, 0, 0,
-		0, 0, z, 0,
+		v.X, 0, 0, 0,
+		0, v.Y, 0, 0,
+		0, 0, v.Z, 0,
 		0, 0, 0, 1,
 	}
 }
@@ -43,21 +43,33 @@ func UniformScaleMatrix4X4(scale float32) Matrix4X4 {
 	}
 }
 
-func RotationMatrix4X4(x, y, z float32) Matrix4X4 {
-	cx, sx := float32(math.Cos(float64(x))), float32(math.Sin(float64(x)))
-	cy, sy := float32(math.Cos(float64(y))), float32(math.Sin(float64(y)))
-	cz, sz := float32(math.Cos(float64(z))), float32(math.Sin(float64(z)))
+func RotationMatrix4X4(v Vector3) Matrix4X4 {
+	// Convert pitch, yaw, and roll (in degrees) to radians
+	pitch, yaw, roll := DegToRad(v.X), DegToRad(v.Y), DegToRad(v.Z)
 
+	// Calculate trigonometric values
+	cx, sx := float32(math.Cos(float64(pitch))), float32(math.Sin(float64(pitch)))
+	cy, sy := float32(math.Cos(float64(yaw))), float32(math.Sin(float64(yaw)))
+	cz, sz := float32(math.Cos(float64(roll))), float32(math.Sin(float64(roll)))
+
+	// Construct the rotation matrix
 	return Matrix4X4{
-		cy * cz, sx*sy*cz - cx*sz, cx*sy*cz + sx*sz, 0,
-		cy * sz, sx*sy*sz + cx*cz, cx*sy*sz - sx*cz, 0,
-		-sy, sx * cy, cx * cy, 0,
+		cy * cz, cy * sz, -sy, 0,
+		sx*sy*cz - cx*sz, sx*sy*sz + cx*cz, sx * cy, 0,
+		cx*sy*cz + sx*sz, cx*sy*sz - sx*cz, cx * cy, 0,
 		0, 0, 0, 1,
 	}
 }
 
+// PerspectiveMatrix4X4 creates a perspective projection matrix with the given
+// field of view in degrees, aspect ratio, near, and far planes.
 func PerspectiveMatrix4X4(fov, aspect, near, far float32) Matrix4X4 {
-	f := 1.0 / float32(math.Tan(float64(fov/2.0)))
+	// Convert FOV from degrees to radians
+	rad := fov * (math.Pi / 180.0)
+
+	// Calculate the scale factor using the tangent of half the FOV
+	f := 1.0 / float32(math.Tan(float64(rad)/2.0))
+
 	return Matrix4X4{
 		f / aspect, 0, 0, 0,
 		0, f, 0, 0,

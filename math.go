@@ -1,6 +1,7 @@
 package madar
 
 import (
+	"math"
 	"math/rand/v2"
 
 	"golang.org/x/exp/constraints"
@@ -26,4 +27,12 @@ func Clamp[T constraints.Ordered](x, min, max T) T {
 		return max
 	}
 	return x
+}
+
+func RadToDeg(radians float32) float32 {
+	return radians * 180 / math.Pi
+}
+
+func DegToRad(degrees float32) float32 {
+	return degrees * math.Pi / 180
 }
