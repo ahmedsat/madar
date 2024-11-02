@@ -64,6 +64,9 @@ func RotationMatrix4X4(v Vector3) Matrix4X4 {
 // PerspectiveMatrix4X4 creates a perspective projection matrix with the given
 // field of view in degrees, aspect ratio, near, and far planes.
 func PerspectiveMatrix4X4(fov, aspect, near, far float32) Matrix4X4 {
+
+	fov = Clamp(fov, 0, 180)
+
 	// Convert FOV from degrees to radians
 	rad := fov * (math.Pi / 180.0)
 
