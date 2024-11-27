@@ -83,7 +83,7 @@ func (v Vector3) Dot(v2 Vector3) float32 {
 }
 
 func (v Vector3) String() string {
-	return fmt.Sprintf("[%.6f,%.6f,%.6f]", v.X, v.Y, v.Z)
+	return fmt.Sprintf("(%f,%f,%f)", v.X, v.Y, v.Z)
 }
 
 func (v Vector3) IsEqual(v2 Vector3) bool {
