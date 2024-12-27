@@ -20,8 +20,9 @@ func GetRand(input any) uint64 {
 	err := encoder.Encode(input)
 
 	if err != nil {
-		bayaan.Fatal("%s", err)
-
+		bayaan.Fatal(err.Error(), bayaan.Fields{
+			"input": input,
+		})
 	}
 
 	bytes := buf.Bytes()
