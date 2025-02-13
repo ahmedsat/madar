@@ -1,11 +1,21 @@
 package madar
 
-import (
-	"fmt"
-	"math"
-)
+import "fmt"
 
 type Matrix4X4 [16]float32
+
+var _ Matrix = Matrix4X4{}
+
+// Ptr implements Matrix.
+func (m Matrix4X4) GL() *float32 {
+	transposed := m.Transpose().(Matrix4X4)
+	return &transposed[0]
+}
+
+// MultiplyVector implements Matrix.
+func (m Matrix4X4) MultiplyVector(v Vector) Vector {
+	panic("unimplemented")
+}
 
 func IdentityMatrix4X4() Matrix4X4 {
 	return Matrix4X4{
@@ -16,183 +26,135 @@ func IdentityMatrix4X4() Matrix4X4 {
 	}
 }
 
-func TranslationMatrix4X4(v Vector3) Matrix4X4 {
-	return Matrix4X4{
-		1, 0, 0, v.X,
-		0, 1, 0, v.Y,
-		0, 0, 1, v.Z,
-		0, 0, 0, 1,
-	}
+// Add implements Matrix.
+func (m Matrix4X4) Add(Matrix) Matrix {
+	panic("unimplemented")
 }
 
-func ScaleMatrix4X4(v Vector3) Matrix4X4 {
-	return Matrix4X4{
-		v.X, 0, 0, 0,
-		0, v.Y, 0, 0,
-		0, 0, v.Z, 0,
-		0, 0, 0, 1,
-	}
+// Determinant implements Matrix.
+func (m Matrix4X4) Determinant() float32 {
+	panic("unimplemented")
 }
 
-func UniformScaleMatrix4X4(scale float32) Matrix4X4 {
-	return Matrix4X4{
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		0, 0, 0, 1 / scale,
-	}
+// DivideScalar implements Matrix.
+func (m Matrix4X4) DivideScalar(s float32) Matrix {
+	panic("unimplemented")
 }
 
-func RotationMatrix4X4(v Vector3) Matrix4X4 {
-	// Convert pitch, yaw, and roll (in degrees) to radians
-	pitch, yaw, roll := DegToRad(v.X), DegToRad(v.Y), DegToRad(v.Z)
-
-	// Calculate trigonometric values
-	cx, sx := float32(math.Cos(float64(pitch))), float32(math.Sin(float64(pitch)))
-	cy, sy := float32(math.Cos(float64(yaw))), float32(math.Sin(float64(yaw)))
-	cz, sz := float32(math.Cos(float64(roll))), float32(math.Sin(float64(roll)))
-
-	// Construct the rotation matrix
-	return Matrix4X4{
-		cy * cz, cy * sz, -sy, 0,
-		sx*sy*cz - cx*sz, sx*sy*sz + cx*cz, sx * cy, 0,
-		cx*sy*cz + sx*sz, cx*sy*sz - sx*cz, cx * cy, 0,
-		0, 0, 0, 1,
-	}
+// Inverse implements Matrix.
+func (m Matrix4X4) Inverse() (Matrix, bool) {
+	panic("unimplemented")
 }
 
-// PerspectiveMatrix4X4 creates a perspective projection matrix with the given
-// field of view in degrees, aspect ratio, near, and far planes.
-func PerspectiveMatrix4X4(fov, aspect, near, far float32) Matrix4X4 {
-
-	fov = Clamp(fov, 0, 180)
-
-	// Convert FOV from degrees to radians
-	rad := fov * (math.Pi / 180.0)
-
-	// Calculate the scale factor using the tangent of half the FOV
-	f := 1.0 / float32(math.Tan(float64(rad)/2.0))
-
-	return Matrix4X4{
-		f / aspect, 0, 0, 0,
-		0, f, 0, 0,
-		0, 0, (far + near) / (near - far), (2 * far * near) / (near - far),
-		0, 0, -1, 0,
-	}
+// IsCholesky implements Matrix.
+func (m Matrix4X4) IsCholesky() bool {
+	panic("unimplemented")
 }
 
-func OrthographicMatrix4X4(left, right, bottom, top, near, far float32) Matrix4X4 {
-	return Matrix4X4{
-		2 / (right - left), 0, 0, 0,
-		0, 2 / (top - bottom), 0, 0,
-		0, 0, -2 / (far - near), 0,
-		-(right + left) / (right - left), -(top + bottom) / (top - bottom), -(far + near) / (far - near), 1,
-	}
+// IsEqual implements Matrix.
+func (m Matrix4X4) IsEqual(Matrix) bool {
+	panic("unimplemented")
 }
 
-func LookAtMatrix4X4(eye, center, up Vector3) Matrix4X4 {
-	f := center.Sub(eye).Normalize()
-	s := f.Cross(up.Normalize()).Normalize()
-	u := s.Cross(f)
+// IsHessenberg implements Matrix.
+func (m Matrix4X4) IsHessenberg() bool {
+	panic("unimplemented")
+}
+
+// IsIdentity implements Matrix.
+func (m Matrix4X4) IsIdentity() bool {
+	panic("unimplemented")
+}
+
+// IsLowerTriangular implements Matrix.
+func (m Matrix4X4) IsLowerTriangular() bool {
+	panic("unimplemented")
+}
+
+// IsOrthogonal implements Matrix.
+func (m Matrix4X4) IsOrthogonal() bool {
+	panic("unimplemented")
+}
+
+// IsSymmetric implements Matrix.
+func (m Matrix4X4) IsSymmetric() bool {
+	panic("unimplemented")
+}
+
+// IsTriangular implements Matrix.
+func (m Matrix4X4) IsTriangular() bool {
+	panic("unimplemented")
+}
+
+// IsUpperTriangular implements Matrix.
+func (m Matrix4X4) IsUpperTriangular() bool {
+	panic("unimplemented")
+}
+
+// IsZero implements Matrix.
+func (m Matrix4X4) IsZero() bool {
+	panic("unimplemented")
+}
+
+// Multiply implements Matrix.
+func (m0 Matrix4X4) Multiply(m Matrix) Matrix {
+	m1, ok := m.(Matrix4X4)
+	Assert(ok, fmt.Sprintf("expected Matrix4X4, got %T", m))
 
 	return Matrix4X4{
-		s.X, s.Y, s.Z, -s.Dot(eye),
-		u.X, u.Y, u.Z, -u.Dot(eye),
-		-f.X, -f.Y, -f.Z, f.Dot(eye),
-		0, 0, 0, 1,
+		m0[0]*m1[0] + m0[4]*m1[1] + m0[8]*m1[2] + m0[12]*m1[3],
+		m0[1]*m1[0] + m0[5]*m1[1] + m0[9]*m1[2] + m0[13]*m1[3],
+		m0[2]*m1[0] + m0[6]*m1[1] + m0[10]*m1[2] + m0[14]*m1[3],
+		m0[3]*m1[0] + m0[7]*m1[1] + m0[11]*m1[2] + m0[15]*m1[3],
+
+		m0[0]*m1[4] + m0[4]*m1[5] + m0[8]*m1[6] + m0[12]*m1[7],
+		m0[1]*m1[4] + m0[5]*m1[5] + m0[9]*m1[6] + m0[13]*m1[7],
+		m0[2]*m1[4] + m0[6]*m1[5] + m0[10]*m1[6] + m0[14]*m1[7],
+		m0[3]*m1[4] + m0[7]*m1[5] + m0[11]*m1[6] + m0[15]*m1[7],
+
+		m0[0]*m1[8] + m0[4]*m1[9] + m0[8]*m1[10] + m0[12]*m1[11],
+		m0[1]*m1[8] + m0[5]*m1[9] + m0[9]*m1[10] + m0[13]*m1[11],
+		m0[2]*m1[8] + m0[6]*m1[9] + m0[10]*m1[10] + m0[14]*m1[11],
+		m0[3]*m1[8] + m0[7]*m1[9] + m0[11]*m1[10] + m0[15]*m1[11],
+
+		m0[0]*m1[12] + m0[4]*m1[13] + m0[8]*m1[14] + m0[12]*m1[15],
+		m0[1]*m1[12] + m0[5]*m1[13] + m0[9]*m1[14] + m0[13]*m1[15],
+		m0[2]*m1[12] + m0[6]*m1[13] + m0[10]*m1[14] + m0[14]*m1[15],
+		m0[3]*m1[12] + m0[7]*m1[13] + m0[11]*m1[14] + m0[15]*m1[15],
 	}
 }
 
-func (m Matrix4X4) Multiply(m2 Matrix4X4) Matrix4X4 {
-	var result Matrix4X4
-	for i := 0; i < 4; i++ {
-		for j := 0; j < 4; j++ {
-			for k := 0; k < 4; k++ {
-				result[i*4+j] += m[i*4+k] * m2[k*4+j]
-			}
-		}
-	}
-	return result
+// MultiplyScalar implements Matrix.
+func (m Matrix4X4) MultiplyScalar(s float32) Matrix {
+	panic("unimplemented")
 }
 
-func (m Matrix4X4) MultiplyVector3(v Vector3) Vector3 {
-
-	return Vector3{
-		m[0]*v.X + m[1]*v.Y + m[2]*v.Z + m[3],
-		m[4]*v.X + m[5]*v.Y + m[6]*v.Z + m[7],
-		m[8]*v.X + m[9]*v.Y + m[10]*v.Z + m[11],
-	}
-
+// Negate implements Matrix.
+func (m Matrix4X4) Negate() Matrix {
+	panic("unimplemented")
 }
 
-func (m Matrix4X4) MultiplyVector4(v Vector4) Vector4 {
-
-	return Vector4{
-		m[0]*v.X + m[1]*v.Y + m[2]*v.Z + m[3]*v.W,
-		m[4]*v.X + m[5]*v.Y + m[6]*v.Z + m[7]*v.W,
-		m[8]*v.X + m[9]*v.Y + m[10]*v.Z + m[11]*v.W,
-		m[12]*v.X + m[13]*v.Y + m[14]*v.Z + m[15]*v.W,
-	}
-
-}
-
-func (m Matrix4X4) Transpose() Matrix4X4 {
-	var result Matrix4X4
-	for i := 0; i < 4; i++ {
-		for j := 0; j < 4; j++ {
-			result[i*4+j] = m[j*4+i]
-		}
-	}
-	return result
-}
-
-// String formats the Matrix4X4 as a string in a 4x4 grid for readability.
+// String implements Matrix.
 func (m Matrix4X4) String() string {
-	return fmt.Sprintf(
-		"[\n  [%f, %f, %f, %f],\n  [%f, %f, %f, %f],\n  [%f, %f, %f, %f],\n  [%f, %f, %f, %f]\n]",
-		m[0], m[1], m[2], m[3],
-		m[4], m[5], m[6], m[7],
-		m[8], m[9], m[10], m[11],
-		m[12], m[13], m[14], m[15],
-	)
+	panic("unimplemented")
 }
 
-func (m Matrix4X4) IsEqual(m2 Matrix4X4) bool {
-	return m[0] == m2[0] && m[1] == m2[1] && m[2] == m2[2] && m[3] == m2[3] &&
-		m[4] == m2[4] && m[5] == m2[5] && m[6] == m2[6] && m[7] == m2[7] &&
-		m[8] == m2[8] && m[9] == m2[9] && m[10] == m2[10] && m[11] == m2[11] &&
-		m[12] == m2[12] && m[13] == m2[13] && m[14] == m2[14] && m[15] == m2[15]
+// Sub implements Matrix.
+func (m Matrix4X4) Sub(Matrix) Matrix {
+	panic("unimplemented")
 }
 
-func (m Matrix4X4) NormalMatrix() Matrix3X3 {
-	return m.Inverse().Transpose().Matrix3()
+// Trace implements Matrix.
+func (m Matrix4X4) Trace() float32 {
+	panic("unimplemented")
 }
 
-func (m Matrix4X4) Inverse() Matrix4X4 {
-	var result Matrix4X4
-	result[0] = m[5]*m[10]*m[15] - m[5]*m[14]*m[11] - m[6]*m[9]*m[15] + m[6]*m[13]*m[11] + m[7]*m[9]*m[14] - m[7]*m[13]*m[10]
-	result[1] = -m[1]*m[10]*m[15] + m[1]*m[14]*m[11] + m[2]*m[9]*m[15] - m[2]*m[13]*m[11] - m[3]*m[9]*m[14] + m[3]*m[13]*m[10]
-	result[2] = m[1]*m[6]*m[15] - m[1]*m[14]*m[7] - m[2]*m[5]*m[15] + m[2]*m[13]*m[7] + m[3]*m[5]*m[14] - m[3]*m[13]*m[6]
-	result[3] = -m[1]*m[6]*m[11] + m[1]*m[10]*m[7] + m[2]*m[5]*m[11] - m[2]*m[9]*m[7] - m[3]*m[5]*m[10] + m[3]*m[9]*m[6]
-	result[4] = -m[4]*m[10]*m[15] + m[4]*m[14]*m[11] + m[6]*m[8]*m[15] - m[6]*m[12]*m[11] - m[7]*m[8]*m[14] + m[7]*m[12]*m[10]
-	result[5] = m[0]*m[10]*m[15] - m[0]*m[14]*m[11] - m[2]*m[8]*m[15] + m[2]*m[12]*m[11] + m[3]*m[8]*m[14] - m[3]*m[12]*m[10]
-	result[6] = -m[0]*m[6]*m[15] + m[0]*m[14]*m[7] + m[2]*m[4]*m[15] - m[2]*m[12]*m[7] - m[3]*m[4]*m[14] + m[3]*m[12]*m[6]
-	result[7] = m[0]*m[6]*m[11] - m[0]*m[10]*m[7] - m[2]*m[4]*m[11] + m[2]*m[8]*m[7] + m[3]*m[4]*m[10] - m[3]*m[8]*m[6]
-	result[8] = m[4]*m[9]*m[15] - m[4]*m[13]*m[11] - m[5]*m[8]*m[15] + m[5]*m[12]*m[11] + m[7]*m[8]*m[13] - m[7]*m[12]*m[9]
-	result[9] = -m[0]*m[9]*m[15] + m[0]*m[13]*m[11] + m[1]*m[8]*m[15] - m[1]*m[12]*m[11] - m[3]*m[8]*m[13] + m[3]*m[12]*m[9]
-	result[10] = m[0]*m[5]*m[15] - m[0]*m[13]*m[7] - m[1]*m[4]*m[15] + m[1]*m[12]*m[7] + m[3]*m[4]*m[13] - m[3]*m[12]*m[5]
-	result[11] = -m[0]*m[5]*m[11] + m[0]*m[9]*m[7] + m[1]*m[4]*m[11] - m[1]*m[8]*m[7] - m[3]*m[4]*m[9] + m[3]*m[8]*m[5]
-	result[12] = -m[4]*m[9]*m[14] + m[4]*m[13]*m[10] + m[5]*m[8]*m[14] - m[5]*m[12]*m[10] - m[6]*m[8]*m[13] + m[6]*m[12]*m[9]
-	result[13] = m[0]*m[9]*m[14] - m[0]*m[13]*m[10] - m[1]*m[8]*m[14] + m[1]*m[12]*m[10] + m[2]*m[8]*m[13] - m[2]*m[12]*m[9]
-	result[14] = -m[0]*m[5]*m[14] + m[0]*m[13]*m[6] + m[1]*m[4]*m[14] - m[1]*m[12]*m[6] - m[2]*m[4]*m[13] + m[2]*m[12]*m[5]
-	result[15] = m[0]*m[5]*m[10] - m[0]*m[9]*m[6] - m[1]*m[4]*m[10] + m[1]*m[8]*m[6] + m[2]*m[4]*m[9] - m[2]*m[8]*m[5]
-	return result
-}
-
-func (m Matrix4X4) Matrix3() Matrix3X3 {
-	return Matrix3X3{
-		m[0], m[1], m[2],
-		m[4], m[5], m[6],
-		m[8], m[9], m[10],
+// Transpose implements Matrix.
+func (m Matrix4X4) Transpose() Matrix {
+	return Matrix4X4{
+		m[0], m[4], m[8], m[12],
+		m[1], m[5], m[9], m[13],
+		m[2], m[6], m[10], m[14],
+		m[3], m[7], m[11], m[15],
 	}
 }

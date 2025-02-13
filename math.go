@@ -25,3 +25,6 @@ func RadToDeg(radians float32) float32 {
 func DegToRad(degrees float32) float32 {
 	return degrees * math.Pi / 180
 }
+
+func Sin(deg float32) float32 { return float32(math.Sin(float64(DegToRad(deg)))) }
+func Cos(deg float32) float32 { return float32(math.Cos(float64(DegToRad(deg)))) }

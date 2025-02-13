@@ -3,8 +3,6 @@ package madar
 import (
 	"bytes"
 	"encoding/gob"
-
-	"github.com/ahmedsat/bayaan"
 )
 
 var seed uint64
@@ -20,9 +18,7 @@ func GetRand(input any) uint64 {
 	err := encoder.Encode(input)
 
 	if err != nil {
-		bayaan.Fatal(err.Error(), bayaan.Fields{
-			"input": input,
-		})
+		panic("can not encode input")
 	}
 
 	bytes := buf.Bytes()
