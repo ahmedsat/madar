@@ -1,5 +1,5 @@
-github.com/ahmedsat/noor v0.0.0-20250211144924-2d818906d13a h1:JymMzGMwcp2CelaDKDopOKpIDvjNHjIlQAZj9v+uZMw=
-github.com/ahmedsat/noor v0.0.0-20250211144924-2d818906d13a/go.mod h1:t/Zjss5vlJi7hKs9umsZH8z5kWjeScYzyFiultme+c8=
+github.com/ahmedsat/noor v0.0.0-20250214125528-db921280d968 h1:/a+56uVNWbgl73VeoXEGoMvrR11GV9O5wyMD7O5WFr8=
+github.com/ahmedsat/noor v0.0.0-20250214125528-db921280d968/go.mod h1:NhJ1DKRrk5LmjJ0oWnKAqjKVs+3aMczgRBcSH5Za6Sk=
 github.com/chai2010/webp v1.1.1 h1:jTRmEccAJ4MGrhFOrPMpNGIJ/eybIgwKpcACsrTEapk=
 github.com/chai2010/webp v1.1.1/go.mod h1:0XVwvZWdjjdxpUEIf7b9g9VkHFnInUSYujwqTLEuldU=
 github.com/go-gl/gl v0.0.0-20231021071112-07e5d0ea2e71 h1:5BVwOaUSBTlVZowGO6VZGw2H/zl9nrd3eCZfYV+NfQA=

@@ -7,7 +7,7 @@ type Matrix4X4 [16]float32
 var _ Matrix = Matrix4X4{}
 
 // Ptr implements Matrix.
-func (m Matrix4X4) GL() *float32 {
+func (m Matrix4X4) Ptr() *float32 {
 	transposed := m.Transpose().(Matrix4X4)
 	return &transposed[0]
 }

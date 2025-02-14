@@ -5,7 +5,7 @@ type Matrix3X3 [9]float32
 var _ Matrix = Matrix3X3{}
 
 // Ptr implements Matrix.
-func (m Matrix3X3) GL() *float32 {
+func (m Matrix3X3) Ptr() *float32 {
 	panic("unimplemented")
 }
 

@@ -34,5 +34,5 @@ type Matrix interface {
 
 	String() string
 
-	GL() *float32
+	Ptr() *float32
 }

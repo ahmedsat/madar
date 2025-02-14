@@ -15,12 +15,6 @@ func init() {
 	runtime.LockOSThread()
 }
 
-var vertices = []noor.Vertex{
-	{Position: [3]float32{0, 0.5, 0}, Color: [3]float32{1, 0, 0}, UV: [2]float32{0.5, 1}},
-	{Position: [3]float32{0.5, -0.5, 0}, Color: [3]float32{0, 1, 0}, UV: [2]float32{1, 0}},
-	{Position: [3]float32{-0.5, -0.5, 0}, Color: [3]float32{0, 0, 1}, UV: [2]float32{0, 0}},
-}
-
 func main() {
 
 	n := noor.New(800, 600, "Hello, Shader!", color.Black).UnwrapOrPanic()
@@ -40,7 +34,7 @@ func main() {
 
 	r := float32(0)
 
-	mesh := noor.NewMesh(vertices, nil, noor.DrawTriangles)
+	mesh := noor.NewMesh(vertices, indices, noor.DrawTriangles)
 
 	for !n.ShouldClose() {
 
@@ -52,7 +46,7 @@ func main() {
 		var mat madar.Matrix
 		mat = madar.IdentityMatrix4X4()
 		mat = madar.RotationMatrix(r, r, r)
-		gl.UniformMatrix4fv(location, 1, false, mat.GL())
+		gl.UniformMatrix4fv(location, 1, false, mat.Ptr())
 
 		mesh.Draw()
 	}
